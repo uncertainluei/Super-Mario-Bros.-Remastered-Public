@@ -89,12 +89,12 @@ const LEVEL_GOLD_ANY_TIMES := {
 
 const SMB1_LEVEL_GOLD_WARPLESS_TIMES := [
 	[17, 24, 17, 16],  # World 1
-	[23, 38, 25, 16],  # World 2
+	[23, 39, 25, 16],  # World 2
 	[23, 23, 17, 16],  # World 3
 	[24, 25, 16, 22],  # World 4
 	[22, 22, 17, 16],  # World 5
 	[21, 25, 18, 16],  # World 6
-	[20, 38, 25, 23],  # World 7
+	[20, 39, 25, 23],  # World 7
 	[40, 24, 24, 50]   # World 8
 ]
 
