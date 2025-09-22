@@ -71,7 +71,7 @@ func kick() -> void:
 		$ScoreNoteSpawner.spawn_note(8000)
 	else:
 		$ScoreNoteSpawner.spawn_note(400)
-	AudioManager.play_sfx("kick", global_position)
+	AudioManager.play_sfx("shell_kick", global_position)
 
 func _physics_process(delta: float) -> void:
 	handle_movement(delta)
@@ -131,7 +131,7 @@ func handle_movement(delta: float) -> void:
 	if moving:
 		if is_on_wall():
 			direction *= -1
-			AudioManager.play_sfx("bump", global_position)
+			AudioManager.play_sfx("shell_bump", global_position)
 		var speed = MOVE_SPEED
 		if is_on_floor() == false:
 			speed = AIR_MOVE_SPEED

@@ -23,7 +23,7 @@ func explode() -> void:
 	queue_free()
 
 func kick(object: Node2D) -> void:
-	AudioManager.play_sfx("kick", global_position)
+	AudioManager.play_sfx("shell_kick", global_position)
 	var kick_dir = sign(global_position.x - object.global_position.x)
 	velocity.x = 150 * kick_dir
 	direction = kick_dir

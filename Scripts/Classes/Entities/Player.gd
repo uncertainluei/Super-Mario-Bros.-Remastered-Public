@@ -583,11 +583,17 @@ func get_power_up(power_name := "") -> void:
 	Global.score += 1000
 	DiscoLevel.combo_amount += 1
 	score_note_spawner.spawn_note(1000)
-	AudioManager.play_sfx("power_up", global_position)
 	if Settings.file.difficulty.damage_style == 0 and power_state.state_name != power_name:
 		if power_name != "Big" and power_state.state_name != "Big":
 			power_name = "Big"
+
+	if power_name == "Fire":
+		AudioManager.play_sfx("power_up_fireflower", global_position)
+	else:
+		AudioManager.play_sfx("power_up", global_position)
+	
 	var new_power_state = get_node("PowerStates/" + power_name)
+	
 	if new_power_state.power_tier >= power_state.power_tier and new_power_state != power_state:
 		can_hurt = false
 		await power_up_animation(power_name)
