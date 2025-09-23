@@ -520,6 +520,7 @@ func die(pit := false) -> void:
 	Global.p_switch_active = false
 	Global.p_switch_timer = 0
 	stop_all_timers()
+	sprite.process_mode = Node.PROCESS_MODE_ALWAYS
 	state_machine.transition_to("Dead", {"Pit": pit})
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().paused = true
@@ -537,35 +538,56 @@ func die(pit := false) -> void:
 func death_load() -> void:
 	power_state = get_node("PowerStates/Small")
 	Global.player_power_states = "0000"
+
 	if Global.death_load:
 		return
 	Global.death_load = true
-	if Global.current_game_mode == Global.GameMode.CUSTOM_LEVEL:
-		LevelTransition.level_to_transition_to = "res://Scenes/Levels/LevelEditor.tscn"
-		Global.transition_to_scene("res://Scenes/Levels/LevelTransition.tscn")
-		return
-	if Global.current_game_mode == Global.GameMode.LEVEL_EDITOR:
-		owner.stop_testing()
-		return
+
+	# Handle lives decrement for CAMPAIGN and MARATHON
 	if [Global.GameMode.CAMPAIGN, Global.GameMode.MARATHON].has(Global.current_game_mode):
 		if Settings.file.difficulty.inf_lives == 0:
 			Global.lives -= 1
-	Global.death_load = true
-	if Global.current_game_mode == Global.GameMode.CHALLENGE:
-		Global.transition_to_scene("res://Scenes/Levels/ChallengeMiss.tscn")
-	elif Global.time <= 0:
-		Global.transition_to_scene("res://Scenes/Levels/TimeUp.tscn")
-	elif Global.lives <= 0 and Settings.file.difficulty.inf_lives == 0:
-		Global.death_load = false
-		Global.transition_to_scene("res://Scenes/Levels/GameOver.tscn")
-	else:
-		LevelPersistance.reset_states()
-		if Global.current_game_mode == Global.GameMode.BOO_RACE:
+
+	# Full dispatch table for death handling
+	var death_actions = {
+		Global.GameMode.CUSTOM_LEVEL: func():
+			LevelTransition.level_to_transition_to = "res://Scenes/Levels/LevelEditor.tscn"
+			Global.transition_to_scene("res://Scenes/Levels/LevelTransition.tscn"),
+
+		Global.GameMode.LEVEL_EDITOR: func():
+			owner.stop_testing(),
+
+		Global.GameMode.CHALLENGE: func():
+			Global.transition_to_scene("res://Scenes/Levels/ChallengeMiss.tscn"),
+
+		Global.GameMode.BOO_RACE: func():
 			Global.reset_values()
 			Global.clear_saved_values()
 			Global.death_load = false
 			Level.start_level_path = Global.current_level.scene_file_path
-		Global.current_level.reload_level()
+			Global.current_level.reload_level(),
+
+		"time_up": func():
+			Global.transition_to_scene("res://Scenes/Levels/TimeUp.tscn"),
+
+		"game_over": func():
+			Global.death_load = false
+			Global.transition_to_scene("res://Scenes/Levels/GameOver.tscn"),
+
+		"default_reload": func():
+			LevelPersistance.reset_states()
+			Global.current_level.reload_level()
+	}
+
+	# Determine which action to take
+	if death_actions.has(Global.current_game_mode):
+		death_actions[Global.current_game_mode].call()
+	elif Global.time <= 0:
+		death_actions["time_up"].call()
+	elif Global.lives <= 0 and Settings.file.difficulty.inf_lives == 0:
+		death_actions["game_over"].call()
+	else:
+		death_actions["default_reload"].call()
 
 func time_up() -> void:
 	die()
@@ -645,7 +667,7 @@ func power_up_animation(new_power_state := "") -> void:
 			await get_tree().create_timer(0.6).timeout
 			transforming = false
 	get_tree().paused = false
-	sprite.process_mode = Node.PROCESS_MODE_PAUSABLE
+	sprite.process_mode = Node.PROCESS_MODE_INHERIT
 	if Global.player_action_just_pressed("jump", player_id):
 		jump()
 	return
