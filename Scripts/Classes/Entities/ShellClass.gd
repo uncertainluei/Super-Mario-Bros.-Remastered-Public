@@ -58,13 +58,13 @@ func block_bounced(_block: Block) -> void:
 func on_player_hit(hit_player: Player) -> void:
 	player = hit_player
 	if can_kick == false:
-		return 
+		return
 	if not moving:
 		direction = sign(global_position.x - hit_player.global_position.x )
 		kick(hit_player)
 	else:
 		hit_player.damage()
-		
+
 func award_score(award_level: int) -> void:
 	if award_level >= 10:
 		if Global.current_game_mode == Global.GameMode.CHALLENGE or Settings.file.difficulty.inf_lives:
@@ -75,7 +75,7 @@ func award_score(award_level: int) -> void:
 			$ScoreNoteSpawner.spawn_one_up_note()
 	else:
 		$ScoreNoteSpawner.spawn_note(COMBO_VALS[award_level])
-		
+
 func get_kick_award(hit_player: Player) -> int:
 	var award_level = hit_player.stomp_combo + 2
 	if award_level > 10:
@@ -99,7 +99,7 @@ func kick(hit_player: Player) -> void:
 	else:
 		award_score(get_kick_award(hit_player))
 	AudioManager.play_sfx("shell_kick", global_position)
-	
+
 	# Limit the number of times you can kick the same shell.
 	if Global.current_game_mode == Global.GameMode.CHALLENGE:
 		times_kicked += 1
@@ -143,7 +143,7 @@ func add_combo() -> void:
 	award_score(combo + 3)
 	if combo < 7:
 		combo += 1
-	
+
 	# Force limit on how long you can let a shell hit respawning enemies.
 	if Global.current_game_mode == Global.GameMode.CHALLENGE and moving_time > 12.0:
 		die()
