@@ -6,7 +6,6 @@ static var current_level_file := ""
 static var has_entered := false
 
 var selected_lvl_idx := 0
-const CUSTOM_LEVEL_PATH := "user://custom_levels/"
 const base64_charset := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 static var page_number_save := -1
 static var last_played_container = null
@@ -19,7 +18,7 @@ func _ready() -> void:
 	ResourceSetterNew.cache.clear()
 	ResourceSetter.cache.clear()
 	Global.get_node("GameHUD").hide()
-	Checkpoint.passed = false
+	Checkpoint.passed_checkpoints.clear()
 	Global.world_num = 1
 	Global.level_num = 1
 	Global.reset_values()
@@ -47,6 +46,7 @@ func _ready() -> void:
 		%LevelList.close()
 
 func clear_saved_stuff() -> void:
+	last_played_container = null
 	%LSSLevelInfo.saved_stuff.clear()
 	saved_search_values = [-1, -1, -1]
 	%LSSBrowser.number_of_pages = -1

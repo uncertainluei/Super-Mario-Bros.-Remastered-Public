@@ -105,7 +105,7 @@ var undo_redo = UndoRedo.new()
 
 func _ready() -> void:
 	$TileMenu.hide()
-	Global.set_discord_status("In The Level Editor...")
+	DiscordManager.set_discord_status("In The Level Editor...")
 	Global.level_editor = self
 	playing_level = false
 	menu_open = $TileMenu.visible
@@ -160,7 +160,7 @@ func _physics_process(delta: float) -> void:
 		elif current_state == EditorState.TILE_MENU:
 			close_tile_menu()
 	if Input.is_action_just_pressed("editor_play") and (current_state == EditorState.IDLE or current_state == EditorState.PLAYTESTING) and Global.current_game_mode == Global.GameMode.LEVEL_EDITOR:
-		Checkpoint.passed = false
+		Checkpoint.passed_checkpoints.clear()
 		if current_state == EditorState.PLAYTESTING:
 			stop_testing()
 		else:
@@ -365,8 +365,6 @@ func close_save_menu() -> void:
 	%SaveLevelDialog.hide()
 	menu_open = false
 	current_state = EditorState.TILE_MENU
-
-const CUSTOM_LEVEL_DIR := "user://custom_levels/"
 
 func handle_tile_cursor() -> void:
 	Input.set_custom_mouse_cursor(null)
