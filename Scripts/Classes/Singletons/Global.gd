@@ -59,8 +59,8 @@ signal text_shadow_changed
 
 var debugged_in := true
 
-var score_tween = create_tween()
-var time_tween = create_tween()
+var score_tween = null
+var time_tween = null
 
 var total_deaths := 0
 
@@ -314,8 +314,10 @@ func tally_time() -> void:
 	score_tally_finished.emit()
 
 func cancel_score_tally() -> void:
-	score_tween.kill()
-	time_tween.kill()
+	if score_tween != null:
+		score_tween.kill()
+	if time_tween != null:
+		time_tween.kill()
 	tallying_score = false
 	$ScoreTally.stop()
 
@@ -480,7 +482,7 @@ func sanitize_string(string := "") -> String:
 	return string
 
 func get_base_asset_version() -> int:
-	var json = JSON.parse_string(FileAccess.open("user://BaseAssets/pack_info.json", FileAccess.READ).get_as_text())
+	var json = JSON.parse_string(FileAccess.open(Global.config_path.path_join("BaseAssets/pack_info.json"), FileAccess.READ).get_as_text())
 	var version = json.version
 	return get_version_num_int(version)
 
